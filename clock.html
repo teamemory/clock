@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+    <head>
+       <title></title>
+	   <meta charset="utf-8">
+	   <style>
+			div{
+				margin:0 auto;
+				width:300px;
+			}
+	   </style>
+    </head>
+	<body>
+	<div>
+		<canvas id="clock" width="300px" height="300px" style="border:1px solid #666"></canvas>
+	</div>
+	<script>
+		var ctx=clock.getContext("2d");
+		var width=clock.width;
+		var height=clock.height;
+		var r=width/2;
+		//绘制背景图
+		function drawBackground(){
+			ctx.save();
+			ctx.translate(r,r);
+			ctx.beginPath();
+			ctx.lineWidth=10;
+			ctx.arc(0,0,r-5,0,2*Math.PI,false);
+			ctx.stroke();
+			var hoursNumber=[3,4,5,6,7,8,9,10,11,12,1,2];
+			ctx.font-"18px Yahei";
+			ctx.textAlign="center";
+			ctx.textBaseLine="middle";
+			hoursNumber.forEach(function(number,i){
+				var cad=2*Math.PI/12*i;
+				var x=Math.cos(cad)*(r-30);
+				var y=(r-30)*Math.sin(cad);
+				ctx.fillText(number,x,y);
+			});
+			
+			for(var i=0;i<60;i++){
+				
+				var cad=2*Math.PI/60*i;
+				var x=Math.cos(cad)*(r-18);
+				var y=(r-18)*Math.sin(cad);
+				ctx.beginPath();
+				
+				if(i%5===0){
+					ctx.fillStyle='black';
+					ctx.arc(x,y,2,0,2*Math.PI,false);
+				}
+				else{
+					ctx.fillStyle='#ccc';
+					ctx.arc(x,y,2,0,2*Math.PI,false);
+					
+				}
+				ctx.fill();
+			}
+		};
+		
+		//绘制时针
+		function drawHour(hour,minutes){
+			var cad=2*Math.PI/12*hour;
+			var mad=2*Math.PI/12/60*minutes;
+			ctx.save();
+			ctx.beginPath();
+			ctx.rotate(cad+mad);
+			ctx.lineWidth=6;
+			ctx.moveTo(0,10);
+			ctx.lineTo(0,-r/2);
+			ctx.stroke();
+			ctx.restore();
+		}
+		
+		//绘制分针
+		function drawMinutes(minutes,seconds){
+			
+			ctx.save();
+			ctx.beginPath();
+			var cad=2*Math.PI/60*minutes;
+			var sad=2*Math.PI/60/60*seconds;
+			ctx.rotate(cad+sad);
+			ctx.lineWidth=3;
+			ctx.moveTo(0,10);
+			ctx.lineTo(0,-r+45);
+			ctx.stroke();
+			ctx.restore();
+		}
+		
+		//绘制秒针
+		function drawSeconds(seconds){
+			ctx.save();
+			ctx.beginPath();
+			ctx.fillStyle="#c14543";
+			var rad=2*Math.PI/60*seconds;
+			ctx.rotate(rad);
+			ctx.moveTo(-2,20);
+			ctx.lineTo(2,20);
+			ctx.lineTo(1,-r+18);
+			ctx.lineTo(-1,-r+18);
+			ctx.fill();
+			ctx.restore();
+		}
+		
+		//画中心点
+		function drawCenter(){
+			ctx.beginPath();
+			ctx.fillStyle="#fff";
+			ctx.arc(0,0,2,0,2*Math.PI,false);
+			ctx.fill();
+		}
+		drawCenter();
+
+		//设置定时器
+		var timer=setInterval(function(){
+			ctx.clearRect(0,0,300,300);
+			drawBackground()
+			var date=new Date();
+			var hour=date.getHours();
+			var minutes=date.getMinutes();
+			var seconds=date.getSeconds();
+			drawHour(hour,minutes);
+			drawMinutes(minutes,seconds);
+			drawSeconds(seconds);
+			ctx.restore();
+
+		},1000);
+	</script>
+	</body>
+</html>
